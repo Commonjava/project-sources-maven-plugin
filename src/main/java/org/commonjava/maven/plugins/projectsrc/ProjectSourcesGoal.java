@@ -53,7 +53,7 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
  * risk of collision).
  */
 /* @formatter:off */
-@Mojo( name = "zip", 
+@Mojo( name = "archive", 
         requiresDependencyResolution = ResolutionScope.NONE, 
         requiresDependencyCollection = ResolutionScope.NONE, 
         requiresOnline = false, 
