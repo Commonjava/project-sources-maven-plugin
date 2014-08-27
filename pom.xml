@@ -9,14 +9,14 @@
 
   <groupId>org.commonjava.maven.plugins</groupId>
   <artifactId>project-sources-maven-plugin</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
   <packaging>maven-plugin</packaging>
 
   <scm>
     <connection>scm:git:http://jdcasey@github.com/jdcasey/project-sources-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jdcasey/project-sources-maven-plugin.git</developerConnection>
     <url>http://github.com/jdcasey/project-sources-maven-plugin</url>
-    <tag>HEAD</tag>
+    <tag>project-sources-maven-plugin-0.2</tag>
   </scm>
 
   <properties>
