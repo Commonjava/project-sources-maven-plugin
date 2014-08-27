@@ -46,7 +46,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
-import org.codehaus.plexus.configuration.PlexusConfiguration;
 
 /**
  * Goal that wraps an invocation of the <code>project</code> built-in assembly descriptor (in the assembly plugin). This allows drastically simpler
@@ -68,7 +67,7 @@ public class ProjectSourcesGoal
 
     private static final String PROJECT_DESCRIPTOR = "project";
 
-    private static final String[] FORMATS = { "zip" };
+    private static final String[] FORMATS = { "tar.gz" };
 
     private static final String CLASSIFIER = "project-sources";
 
@@ -96,14 +95,8 @@ public class ProjectSourcesGoal
     @Component
     protected MavenSession mavenSession;
 
-    @Parameter( property = "project.src.skip" )
-    protected boolean skipAssembly;
-
     @Parameter( defaultValue = "${basedir}", required = true, readonly = true )
     protected File basedir;
-
-    @Parameter( property = "project.src.dryRun" )
-    protected boolean dryRun;
 
     @Parameter( defaultValue = "${reactorProjects}", required = true, readonly = true )
     protected List<MavenProject> reactorProjects;
@@ -114,54 +107,32 @@ public class ProjectSourcesGoal
     /**
      * Temporary directory that contain the files to be assembled.
      */
-    @Parameter( defaultValue = "${project.build.directory}/archive-tmp", required = true, readonly = true )
+    @Parameter( defaultValue = "${project.build.directory}/projectsrc-archive-tmp", required = true, readonly = true )
     protected File tempRoot;
 
     /**
      * Directory to unpack JARs into if needed
      */
-    @Parameter( defaultValue = "${project.build.directory}/assembly/work", required = true )
+    @Parameter( defaultValue = "${project.build.directory}/projectsrc-work", required = true )
     protected File workDirectory;
 
     /**
      * The output directory of the assembled distribution file.
      */
-    @Parameter( defaultValue = "${project.build.directory}", required = true )
+    @Parameter( defaultValue = "${project.build.directory}", required = true, readonly = true )
     protected File outputDirectory;
 
     /**
      * The filename of the assembled distribution file.
      */
-    @Parameter( defaultValue = "${project.build.finalName}", required = true )
+    @Parameter( defaultValue = "${project.build.finalName}", required = true, readonly = true )
     protected String finalName;
 
     /**
-     * Allows additional configuration options that are specific to a particular type of archive format. This is
-     * intended to capture an XML configuration that will be used to reflectively setup the options on the archiver
-     * instance. <br/>
-     * For instance, to direct an assembly with the "ear" format to use a particular deployment descriptor, you should
-     * specify the following for the archiverConfig value in your plugin configuration: <br/>
-     * <p/>
-     * <pre>
-     * &lt;appxml&gt;${project.basedir}/somepath/app.xml&lt;/appxml&gt;
-     * </pre>
+     * When set to 'true' the project-sources.zip will NOT be produced during the build.
      */
-    @Parameter
-    protected PlexusConfiguration archiverConfig;
-
-    /**
-     * The character encoding scheme to be applied when filtering resources.
-     */
-    @Parameter( property = "encoding", defaultValue = "${project.build.sourceEncoding}" )
-    protected String encoding;
-
-    /**
-     * This is a set of instructions to the archive builder, especially for building .jar files. It enables you to
-     * specify a Manifest file for the jar, in addition to other options.
-     * See <a href="http://maven.apache.org/shared/maven-archiver/index.html">Maven Archiver Reference</a>.
-     */
-    @Parameter
-    protected MavenArchiveConfiguration archive;
+    @Parameter( property = "project.src.skip" )
+    protected boolean skipProjectSources;
 
     protected ProjectSourcesGoal()
     {
@@ -171,7 +142,7 @@ public class ProjectSourcesGoal
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        if ( skipAssembly )
+        if ( skipProjectSources )
         {
             getLog().info( "Assemblies have been skipped per configuration of the skipAssembly parameter." );
             return;
@@ -262,7 +233,7 @@ public class ProjectSourcesGoal
     @Override
     public String getArchiverConfig()
     {
-        return archiverConfig == null ? null : archiverConfig.toString();
+        return null;
     }
 
     @Override
@@ -310,7 +281,7 @@ public class ProjectSourcesGoal
     @Override
     public String getEncoding()
     {
-        return encoding;
+        return null;
     }
 
     @Override
@@ -334,7 +305,7 @@ public class ProjectSourcesGoal
     @Override
     public MavenArchiveConfiguration getJarArchiveConfiguration()
     {
-        return archive;
+        return null;
     }
 
     @Override
@@ -413,7 +384,7 @@ public class ProjectSourcesGoal
     @Override
     public boolean isDryRun()
     {
-        return dryRun;
+        return false;
     }
 
     @Override
