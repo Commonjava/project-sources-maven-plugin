@@ -24,7 +24,7 @@
           <execution>
             <id>projectsrc</id>
             <goals>
-              <goal>zip</goal>
+              <goal>archive</goal>
             </goals>
           </execution>
         </executions>
