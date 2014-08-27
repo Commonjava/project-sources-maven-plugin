@@ -5,19 +5,22 @@ import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
-File dir = new File( localRepositoryPath, "org/test/test-project/1.0-SNAPSHOT" )
+def project = new XmlSlurper().parseText( new File(basedir, "pom.xml").getText() )
+def root = "${project.artifactId}-${project.version}"
+def version = project.parent.version
+def groupPath = project.parent.groupId
+
+groupPath = groupPath.toString().replace('.', '/')
+
+File dir = new File( localRepositoryPath, "${groupPath}/${project.artifactId}/${version}" )
 File destDir = new File( basedir, "target")
 
-File tgz = new File( dir, "test-project-1.0-SNAPSHOT-project-sources.tar.gz")
+File tgz = new File( dir, "${project.artifactId}-${version}-project-sources.tar.gz")
 
-if ( !tgz.exists() )
-{
+if ( !tgz.exists() ){
     System.out.println("Cannot find tar archive: ${tgz}" )
     return false
 }
-
-def project = new XmlSlurper().parseText( new File(basedir, "pom.xml").getText() )
-def root = "${project.artifactId}-${project.version}"
 
 final TarGZipUnArchiver ua = new TarGZipUnArchiver( tgz );
 ua.enableLogging( new ConsoleLogger(Logger.LEVEL_DEBUG, "verify") );
