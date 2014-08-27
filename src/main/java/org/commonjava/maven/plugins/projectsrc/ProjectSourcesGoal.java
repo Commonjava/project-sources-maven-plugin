@@ -59,7 +59,7 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
         requiresDependencyCollection = ResolutionScope.NONE, 
         requiresOnline = false, 
         requiresProject = true, 
-        defaultPhase = LifecyclePhase.PACKAGE )
+        defaultPhase = LifecyclePhase.INITIALIZE )
 /* @formatter:on */
 public class ProjectSourcesGoal
     extends AbstractMojo
