@@ -6,12 +6,19 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 def project = new XmlSlurper().parseText( new File(basedir, "pom.xml").getText() )
-def root = "${project.artifactId}-${project.version}"
 def version = project.parent.version
+
+assert new File( basedir, "target/${project.artifactId}-${version}-project-sources.tar.gz" ).exists();
+
+def parentProject = new XmlSlurper().parseText( new File(basedir, "parent/pom.xml").getText() )
+assert !new File( basedir, "parent/target/${parentProject.artifactId}-${version}-project-sources.tar.gz" ).exists();
+
+def childProject = new XmlSlurper().parseText( new File(basedir, "child/pom.xml").getText() )
+assert !new File( basedir, "child/target/${childProject.artifactId}-${version}-project-sources.tar.gz" ).exists();
+
 def groupPath = project.parent.groupId
 
 groupPath = groupPath.toString().replace('.', '/')
-
 File dir = new File( localRepositoryPath, "${groupPath}/${project.artifactId}/${version}" )
 File destDir = new File( basedir, "target")
 
@@ -28,6 +35,7 @@ destDir.mkdirs();
 ua.setDestDirectory(destDir);
 ua.extract();
 
+def root = "${project.artifactId}-${version}"
 File rootDir = new File( destDir, root );
 
 def filesPresent = [

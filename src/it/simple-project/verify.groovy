@@ -6,7 +6,6 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 def project = new XmlSlurper().parseText( new File(basedir, "pom.xml").getText() )
-def root = "${project.artifactId}-${project.version}"
 def version = project.version
 if ( version == null ){
     version = project.parent.version
@@ -18,6 +17,8 @@ if ( groupPath == null ){
 }
 
 groupPath = groupPath.toString().replace('.', '/')
+
+assert new File( basedir, "target/${project.artifactId}-${version}-project-sources.tar.gz" ).exists();
 
 File dir = new File( localRepositoryPath, "${groupPath}/${project.artifactId}/${version}" )
 File destDir = new File( basedir, "target")
@@ -36,6 +37,7 @@ destDir.mkdirs();
 ua.setDestDirectory(destDir);
 ua.extract();
 
+def root = "${project.artifactId}-${version}"
 File rootDir = new File( destDir, root );
 
 def filesPresent = [
