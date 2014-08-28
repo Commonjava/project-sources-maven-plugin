@@ -20,6 +20,7 @@ package org.commonjava.maven.plugins.projectsrc;
  */
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
@@ -67,7 +68,7 @@ public class ProjectSourcesGoal
 
     private static final String PROJECT_DESCRIPTOR = "project";
 
-    private static final String[] FORMATS = { "tar.gz" };
+    private static final List<String> FORMATS = Collections.unmodifiableList( Collections.singletonList( "tar.gz" ) );
 
     private static final String CLASSIFIER = "project-sources";
 
@@ -155,6 +156,39 @@ public class ProjectSourcesGoal
             return;
         }
 
+        final Assembly assembly = getAssembly();
+
+        try
+        {
+            final String fullName = AssemblyFormatUtils.getDistributionName( assembly, this );
+
+            for ( final String format : assembly.getFormats() )
+            {
+                final File destFile = archiver.createArchive( assembly, fullName, format, this, true );
+
+                final MavenProject project = getProject();
+                projectHelper.attachArtifact( project, format, assembly.getId(), destFile );
+            }
+        }
+        catch ( final ArchiveCreationException e )
+        {
+            throw new MojoExecutionException( "Failed to create assembly: " + e.getMessage(), e );
+        }
+        catch ( final AssemblyFormattingException e )
+        {
+            throw new MojoExecutionException( "Failed to create assembly: " + e.getMessage(), e );
+        }
+        catch ( final InvalidAssemblerConfigurationException e )
+        {
+            throw new MojoFailureException( assembly, "Assembly is incorrectly configured: " + assembly.getId(),
+                                            "Assembly: " + assembly.getId() + " is not configured correctly: "
+                                                + e.getMessage() );
+        }
+    }
+
+    private Assembly getAssembly()
+        throws MojoExecutionException, MojoFailureException
+    {
         List<Assembly> assemblies;
         try
         {
@@ -169,35 +203,16 @@ public class ProjectSourcesGoal
             throw new MojoFailureException( reader, e.getMessage(), "Mojo configuration is invalid: " + e.getMessage() );
         }
 
-        for ( final Assembly assembly : assemblies )
+        if ( assemblies == null || assemblies.isEmpty() )
         {
-            try
-            {
-                final String fullName = AssemblyFormatUtils.getDistributionName( assembly, this );
-
-                for ( final String format : FORMATS )
-                {
-                    final File destFile = archiver.createArchive( assembly, fullName, format, this, true );
-
-                    final MavenProject project = getProject();
-                    projectHelper.attachArtifact( project, format, CLASSIFIER, destFile );
-                }
-            }
-            catch ( final ArchiveCreationException e )
-            {
-                throw new MojoExecutionException( "Failed to create assembly: " + e.getMessage(), e );
-            }
-            catch ( final AssemblyFormattingException e )
-            {
-                throw new MojoExecutionException( "Failed to create assembly: " + e.getMessage(), e );
-            }
-            catch ( final InvalidAssemblerConfigurationException e )
-            {
-                throw new MojoFailureException( assembly, "Assembly is incorrectly configured: " + assembly.getId(),
-                                                "Assembly: " + assembly.getId() + " is not configured correctly: "
-                                                    + e.getMessage() );
-            }
+            throw new MojoExecutionException( "Cannot read '" + PROJECT_DESCRIPTOR + "' assembly descriptor!" );
         }
+
+        final Assembly assembly = assemblies.get( 0 );
+        assembly.setId( CLASSIFIER );
+        assembly.setFormats( FORMATS );
+
+        return assembly;
     }
 
     /**
