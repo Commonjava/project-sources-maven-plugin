@@ -7,3 +7,25 @@ This plugin was created to make the creation of project-sources archives as simp
 ## `m2eclipse` Ignores this Plugin
 
 As of the 1.0 release, this plugin includes a `META-INF/m2e/lifecycle-mapping-metadata.xml` file that tells m2eclipse to ignore it when Eclipse rebuilds your project.
+
+## Usage
+
+It's a pretty simple configuration:
+
+    <plugin>
+      <groupId>org.commonjava.maven.plugins</groupId>
+      <artifactId>project-sources-maven-plugin</artifactId>
+      <version>${projectSrcVersion}</version>
+      <executions>
+        <execution>
+          <id>project-sources</id>
+          <goals>
+            <goal>archive</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+
+### Disabling from the Command Line
+
+If you find that you need to disable this plugin for a specific build, you can use the `-Dproject.src.skip=true` command-line option.
