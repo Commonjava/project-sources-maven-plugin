@@ -4,18 +4,18 @@
   <parent>
     <groupId>org.commonjava</groupId>
     <artifactId>commonjava</artifactId>
-    <version>4</version>
+    <version>8</version>
   </parent>
 
   <groupId>org.commonjava.maven.plugins</groupId>
   <artifactId>project-sources-maven-plugin</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <scm>
-    <connection>scm:git:http://jdcasey@github.com/jdcasey/project-sources-maven-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jdcasey/project-sources-maven-plugin.git</developerConnection>
-    <url>http://github.com/jdcasey/project-sources-maven-plugin</url>
+    <connection>scm:git:http://github.com/Commonjava/project-sources-maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:Commonjava/project-sources-maven-plugin.git</developerConnection>
+    <url>http://github.com/Commonjava/project-sources-maven-plugin</url>
     <tag>HEAD</tag>
   </scm>
 
