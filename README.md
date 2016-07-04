@@ -29,3 +29,24 @@ It's a pretty simple configuration:
 ### Disabling from the Command Line
 
 If you find that you need to disable this plugin for a specific build, you can use the `-Dproject.src.skip=true` command-line option.
+
+### Changing source archive root folder
+
+To create source archive with root folder myFolderName
+
+    <plugin>
+      <groupId>org.commonjava.maven.plugins</groupId>
+      <artifactId>project-sources-maven-plugin</artifactId>
+      <version>${projectSrcVersion}</version>
+      <executions>
+        <execution>
+          <id>project-sources</id>
+          <goals>
+            <goal>archive</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <assemblyRootFolder>myFolderName</assemblyRootFolder>
+      </configuration>
+    </plugin>

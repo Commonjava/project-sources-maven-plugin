@@ -15,10 +15,6 @@
  */
 package org.commonjava.maven.plugins.projectsrc;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -43,6 +39,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Goal that wraps an invocation of the <code>project</code> built-in assembly descriptor (in the assembly plugin). This allows drastically simpler
@@ -94,6 +94,9 @@ public class ProjectSourcesGoal
 
     @Parameter( defaultValue = "${basedir}", required = true, readonly = true )
     protected File basedir;
+
+    @Parameter( defaultValue = "${project.build.finalName}", required = true, readonly = true )
+    protected String assemblyRootFolder;
 
     @Parameter( defaultValue = "${reactorProjects}", required = true, readonly = true )
     protected List<MavenProject> reactorProjects;
@@ -158,9 +161,10 @@ public class ProjectSourcesGoal
         {
             final String fullName = AssemblyFormatUtils.getDistributionName( assembly, this );
 
+            AssemblerConfigurationSource configSourceForArchive = assemblyRootFolderNameDiffersFromFinalName() ? createConfigSourceForArchive(this) : this;
             for ( final String format : assembly.getFormats() )
             {
-                final File destFile = archiver.createArchive( assembly, fullName, format, this, true );
+                final File destFile = archiver.createArchive( assembly, fullName, format, configSourceForArchive, true );
 
                 final MavenProject project = getProject();
                 projectHelper.attachArtifact( project, format, assembly.getId(), destFile );
@@ -180,6 +184,176 @@ public class ProjectSourcesGoal
                                             "Assembly: " + assembly.getId() + " is not configured correctly: "
                                                 + e.getMessage() );
         }
+    }
+
+    private AssemblerConfigurationSource createConfigSourceForArchive(final AssemblerConfigurationSource other) {
+        return new AssemblerConfigurationSource() {
+
+            @Override
+            public String getDescriptor() {
+                return other.getDescriptor();
+            }
+
+            @Override
+            public String getDescriptorId() {
+                return other.getDescriptorId();
+            }
+
+            @Override
+            public String[] getDescriptors() {
+                return other.getDescriptors();
+            }
+
+            @Override
+            public String[] getDescriptorReferences() {
+                return other.getDescriptorReferences();
+            }
+
+            @Override
+            public File getDescriptorSourceDirectory() {
+                return other.getDescriptorSourceDirectory();
+            }
+
+            @Override
+            public File getBasedir() {
+                return other.getBasedir();
+            }
+
+            @Override
+            public MavenProject getProject() {
+                return other.getProject();
+            }
+
+            @Override
+            public boolean isSiteIncluded() {
+                return other.isSiteIncluded();
+            }
+
+            @Override
+            public File getSiteDirectory() {
+                return other.getSiteDirectory();
+            }
+
+            @Override
+            public String getFinalName() {
+                return assemblyRootFolder;
+            }
+
+            @Override
+            public boolean isAssemblyIdAppended() {
+                return other.isAssemblyIdAppended();
+            }
+
+            @Override
+            public String getClassifier() {
+                return other.getClassifier();
+            }
+
+            @Override
+            public String getTarLongFileMode() {
+                return other.getTarLongFileMode();
+            }
+
+            @Override
+            public File getOutputDirectory() {
+                return other.getOutputDirectory();
+            }
+
+            @Override
+            public File getWorkingDirectory() {
+                return other.getWorkingDirectory();
+            }
+
+            @Override
+            public MavenArchiveConfiguration getJarArchiveConfiguration() {
+                return other.getJarArchiveConfiguration();
+            }
+
+            @Override
+            public ArtifactRepository getLocalRepository() {
+                return other.getLocalRepository();
+            }
+
+            @Override
+            public File getTemporaryRootDirectory() {
+                return other.getTemporaryRootDirectory();
+            }
+
+            @Override
+            public File getArchiveBaseDirectory() {
+                return other.getArchiveBaseDirectory();
+            }
+
+            @Override
+            public List<String> getFilters() {
+                return other.getFilters();
+            }
+
+            @Override
+            public List<MavenProject> getReactorProjects() {
+                return other.getReactorProjects();
+            }
+
+            @Override
+            public List<ArtifactRepository> getRemoteRepositories() {
+                return other.getRemoteRepositories();
+            }
+
+            @Override
+            public boolean isDryRun() {
+                return other.isDryRun();
+            }
+
+            @Override
+            public boolean isIgnoreDirFormatExtensions() {
+                return other.isIgnoreDirFormatExtensions();
+            }
+
+            @Override
+            public boolean isIgnoreMissingDescriptor() {
+                return other.isIgnoreMissingDescriptor();
+            }
+
+            @Override
+            public MavenSession getMavenSession() {
+                return other.getMavenSession();
+            }
+
+            @Override
+            public String getArchiverConfig() {
+                return other.getArchiverConfig();
+            }
+
+            @Override
+            public MavenFileFilter getMavenFileFilter() {
+                return other.getMavenFileFilter();
+            }
+
+            @Override
+            public boolean isUpdateOnly() {
+                return other.isUpdateOnly();
+            }
+
+            @Override
+            public boolean isUseJvmChmod() {
+                return other.isUseJvmChmod();
+            }
+
+            @Override
+            public boolean isIgnorePermissions() {
+                return other.isIgnorePermissions();
+            }
+
+            @Override
+            public String getEncoding() {
+                return other.getEncoding();
+            }
+
+            @Override
+            public String getEscapeString() {
+                return other.getEscapeString();
+            }
+        };
     }
 
     private Assembly getAssembly()
@@ -434,4 +608,7 @@ public class ProjectSourcesGoal
         return true;
     }
 
+    private boolean assemblyRootFolderNameDiffersFromFinalName() {
+        return (assemblyRootFolder != null && !assemblyRootFolder.equals(finalName));
+    }
 }
