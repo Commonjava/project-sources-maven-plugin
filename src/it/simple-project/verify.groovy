@@ -1,9 +1,6 @@
-import java.io.File;
-import java.util.zip.ZipFile;
-
-import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver
+import org.codehaus.plexus.logging.Logger
+import org.codehaus.plexus.logging.console.ConsoleLogger
 
 def project = new XmlSlurper().parseText( new File(basedir, "pom.xml").getText() )
 def version = project.version
@@ -47,12 +44,16 @@ def filesPresent = [
     "verify.groovy"
     ]
 
-filesPresent.each{
+boolean missing = false;
+filesPresent.each {
     if ( !new File( rootDir, it ).exists() )
     {
         System.out.println("${it} not present in archive!")
-        return false
+        missing = true;
     }
+}
+if (missing) {
+    return false;
 }
 
 def filesMissing = [
@@ -62,12 +63,16 @@ def filesMissing = [
     "src/test/java/.svn/entries"
     ]
 
+boolean present = false;
 filesMissing.each{
     if ( new File( rootDir, it ).exists() )
     {
         System.out.println("${it} is present in archive, but should not be!")
-        return false
+        present = true;
     }
+}
+if (present) {
+    return false;
 }
 
 return true
