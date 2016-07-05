@@ -34,7 +34,7 @@ destDir.mkdirs();
 ua.setDestDirectory(destDir);
 ua.extract();
 
-def root = "${project.artifactId}-${version}"
+def root = "test"
 File rootDir = new File( destDir, root );
 
 def filesPresent = [
@@ -62,7 +62,6 @@ def filesMissing = [
     "build.log",
     "src/test/java/.svn/entries"
     ]
-
 boolean present = false;
 filesMissing.each{
     if ( new File( rootDir, it ).exists() )
