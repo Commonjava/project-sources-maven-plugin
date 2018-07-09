@@ -50,3 +50,27 @@ To create source archive with root folder myFolderName
         <assemblyRootFolder>myFolderName</assemblyRootFolder>
       </configuration>
     </plugin>
+
+### Specify source archive format(s)
+
+By default source archive format is "tar.gz". Use "formats" configuration option to specify different or additional formats (see https://maven.apache.org/plugins/maven-assembly-plugin/single-mojo.html#formats )
+Formats are comma separated.
+
+Eg. to generate tar.gz and zip format
+
+    <plugin>
+      <groupId>org.commonjava.maven.plugins</groupId>
+      <artifactId>project-sources-maven-plugin</artifactId>
+      <version>${projectSrcVersion}</version>
+      <executions>
+        <execution>
+          <id>project-sources</id>
+          <goals>
+            <goal>archive</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <formats>tar.gz, zip</formats>
+      </configuration>
+    </plugin>
