@@ -15,6 +15,9 @@
  */
 package org.commonjava.maven.plugins.projectsrc;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -41,7 +44,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,8 +66,6 @@ public class ProjectSourcesGoal
 {
 
     private static final String PROJECT_DESCRIPTOR = "project";
-
-    private static final List<String> FORMATS = Collections.unmodifiableList( Collections.singletonList( "tar.gz" ) );
 
     private static final String CLASSIFIER = "project-sources";
 
@@ -134,6 +135,14 @@ public class ProjectSourcesGoal
     @Parameter( property = "project.src.skip" )
     protected boolean skipProjectSources;
 
+    /**
+     * Allow to specify formats to be generated. Default value is "tar.gz". Please follow link below for list of possible values
+     * @see <a href="https://maven.apache.org/plugins/maven-assembly-plugin/single-mojo.html#formats">https://maven.apache.org/plugins/maven-assembly-plugin/single-mojo.html#formats</a>
+     *
+     */
+    @Parameter( property = "formats", defaultValue = "tar.gz")
+    protected String formats;
+
     protected ProjectSourcesGoal()
     {
     }
@@ -155,7 +164,9 @@ public class ProjectSourcesGoal
             return;
         }
 
-        final Assembly assembly = getAssembly();
+        final List<String> assemblyFormats = getAssemblyFormats( formats );
+
+        final Assembly assembly = getAssembly( assemblyFormats );
 
         try
         {
@@ -184,6 +195,16 @@ public class ProjectSourcesGoal
                                             "Assembly: " + assembly.getId() + " is not configured correctly: "
                                                 + e.getMessage() );
         }
+    }
+
+    static List<String> getAssemblyFormats(String formats) {
+        List<String> parsedList = asList(formats.split(","));
+        List<String> list = new ArrayList<String>();
+        int size = parsedList.size();
+        for(int i = 0; i < size; i++) {
+            list.add( parsedList.get(i).trim() );
+        }
+        return unmodifiableList(list);
     }
 
     private AssemblerConfigurationSource createConfigSourceForArchive(final AssemblerConfigurationSource other) {
@@ -356,7 +377,7 @@ public class ProjectSourcesGoal
         };
     }
 
-    private Assembly getAssembly()
+    private Assembly getAssembly(List<String> assemblyFormats)
         throws MojoExecutionException, MojoFailureException
     {
         List<Assembly> assemblies;
@@ -380,7 +401,7 @@ public class ProjectSourcesGoal
 
         final Assembly assembly = assemblies.get( 0 );
         assembly.setId( CLASSIFIER );
-        assembly.setFormats( FORMATS );
+        assembly.setFormats( assemblyFormats );
 
         return assembly;
     }
