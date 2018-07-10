@@ -26,14 +26,14 @@
 
   <groupId>org.commonjava.maven.plugins</groupId>
   <artifactId>project-sources-maven-plugin</artifactId>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <scm>
     <connection>scm:git:http://github.com/Commonjava/project-sources-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:Commonjava/project-sources-maven-plugin.git</developerConnection>
     <url>http://github.com/Commonjava/project-sources-maven-plugin</url>
-    <tag>project-sources-maven-plugin-1.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
